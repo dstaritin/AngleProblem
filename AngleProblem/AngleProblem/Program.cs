@@ -38,12 +38,30 @@ namespace AngleProblem
             Adduction();
         }
 
+        public bool this[bool poz] => Pozitive;
+
+        public int this[int i]
+        {
+            get
+            {
+                switch (i)
+                {
+                    case 1:
+                        return Degrees;
+                    case 2:
+                        return Minutes;
+                    case 3:
+                        return Seconds;
+                    default:
+                        return i;
+                }
+            }
+        }
         public override string ToString()
         {
             var ch = Pozitive ? '+' : '-';
-            return $"{ch} {Degrees}° {Minutes}\' {Seconds}\"";
+            return $"{ch}{Degrees}° {Minutes}\' {Seconds}\"";
         }
-
         public void Adduction()
         {
             while (_seconds >= 60)
@@ -79,11 +97,12 @@ namespace AngleProblem
         }
         public static Angle operator +(Angle a1, Angle a2)
         {
-            bool poz = a2.Pozitive;
+            bool poz = a1.Pozitive;
             int deg, min, sec;
 
             if (a1.Pozitive != a2.Pozitive)
-                a1.Inverse();
+                a2.Inverse();
+
             deg = a1.Degrees + a2.Degrees;
             min = a1.Minutes + a2.Minutes;
             sec = a1.Seconds + a2.Seconds;
@@ -102,6 +121,67 @@ namespace AngleProblem
             a.Inverse();
             return a;
         }
+        public static Angle operator *(Angle a, int i)
+        {
+            bool poz = a.Pozitive;
+            int deg = a.Degrees*i;
+            int min = a.Minutes*i;
+            int sec = a.Seconds*i;
+            return new Angle(poz, deg, min, sec);
+        }
+
+        public static bool operator ==(Angle a1, Angle a2)
+        {
+            if(a1.Pozitive != a2.Pozitive)
+                a2.Inverse();
+
+            if (a1.Degrees == a2.Degrees && a1.Minutes == a2.Minutes && a1.Seconds == a2.Seconds)
+                return true;
+            return false;
+        }
+
+        public static bool operator !=(Angle a1, Angle a2)
+        {
+            return !(a1 == a2);
+        }
+        public static bool operator <(Angle a1, Angle a2)
+        {
+            if (a1.Pozitive != a2.Pozitive)
+                a2.Inverse();
+
+            if (a1[1] < a2[1])
+                return true;
+            if (a1[1] == a2[1] && a1[2] < a2[2])
+                return true;
+            if (a1[2] == a2[2] && a1[3] < a2[3])
+                return true;
+            return false;
+
+        }
+
+        public static bool operator >(Angle a1, Angle a2)
+        {
+            if (a1.Pozitive != a2.Pozitive)
+                a2.Inverse();
+
+            if (a1[1] > a2[1])
+                return true;
+            if (a1[1] == a2[1] && a1[2] > a2[2])
+                return true;
+            if (a1[2] == a2[2] && a1[3] > a2[3])
+                return true;
+            return false;
+        }
+
+        public static bool operator <=(Angle a1, Angle a2)
+        {
+            return !(a1 > a2);
+        }
+
+        public static bool operator >=(Angle a1, Angle a2)
+        {
+            return !(a1 < a2);
+        }
     }
 
     class Program
@@ -109,10 +189,19 @@ namespace AngleProblem
         static void Main(string[] args)
         {
             var a = new Angle(true, 60, 48, 1);
-            var b = a;
+            var b = new Angle(true, 60, 48, 1);
 
-            Console.WriteLine(a - b);
-            
+            Console.WriteLine("a = {0}\nb = {1}\n".PadRight(34, '_'), a, b);
+            Console.WriteLine();
+
+            Console.WriteLine("a == b - {0}", a == b);
+            Console.WriteLine("a != b - {0}", a != b);
+            Console.WriteLine("a < b - {0}", a < b);
+            Console.WriteLine("a > b - {0}", a > b);
+            Console.WriteLine("a <= b - {0}", a <= b);
+            Console.WriteLine("a >= b - {0}", a >= b);
+            Console.WriteLine();
+
         }
     }
 }
