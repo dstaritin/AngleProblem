@@ -59,22 +59,48 @@ namespace AngleProblem
             while (_degrees >= 360)
                 _degrees -= 360;
         }
-        //public void Inverse()
-        //{
-        //    _pozitive = !_pozitive;
-        //    _
-        //}
+        public void Inverse()
+        {
+            _pozitive = !_pozitive;
+            _degrees = 360 - _degrees;
+            _minutes = -_minutes;
+            _seconds = -_seconds;
+
+            while (_seconds < 0)
+            {
+                _seconds += 60;
+                _minutes--;
+            }
+            while (_minutes < 0)
+            {
+                _minutes += 60;
+                _degrees--;
+            }
+        }
         public static Angle operator +(Angle a1, Angle a2)
         {
-            bool poz = a1.Pozitive;
+            bool poz = a2.Pozitive;
             int deg, min, sec;
 
             if (a1.Pozitive != a2.Pozitive)
-                /*a2.Inverse()*/;
+                a1.Inverse();
             deg = a1.Degrees + a2.Degrees;
             min = a1.Minutes + a2.Minutes;
             sec = a1.Seconds + a2.Seconds;
             return new Angle(poz, deg, min, sec);
+        }
+
+        public static Angle operator -(Angle a1, Angle a2)
+        {
+            a2._pozitive = !a2._pozitive;
+            a2.Inverse();
+            return a1 + a2;
+        }
+
+        public static Angle operator !(Angle a)
+        {
+            a.Inverse();
+            return a;
         }
     }
 
@@ -82,12 +108,11 @@ namespace AngleProblem
     {
         static void Main(string[] args)
         {
-            var a = new Angle(true, 59, 48, 2);
-            var b = new Angle(true, 95, 57, 1);
-            Console.WriteLine("{0}\n{1}\n", a, b);
+            var a = new Angle(true, 60, 48, 1);
+            var b = a;
 
-            var c = a + b;
-            Console.WriteLine(c);
+            Console.WriteLine(a - b);
+            
         }
     }
 }
