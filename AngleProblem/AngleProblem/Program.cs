@@ -1,13 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static AngleProblem.VerifyingTwoAngles;
 
+/*
+
+ Possible operations:
+ For one Angle: !(Invers);
+ Between two Angles: +, -, <, >, ==, !=, <=, >= ();
+ Between Angle and int: *;
+
+*/
 namespace AngleProblem
 {
     public struct Angle
     {
+        #region ReSharper asked me to write it
+        public bool Equals(Angle other)
+        {
+            return _pozitive == other._pozitive && _degrees == other._degrees && _minutes == other._minutes && _seconds == other._seconds;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is Angle && Equals((Angle) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = _pozitive.GetHashCode();
+                hashCode = (hashCode*397) ^ _degrees;
+                hashCode = (hashCode*397) ^ _minutes;
+                hashCode = (hashCode*397) ^ _seconds;
+                return hashCode;
+            }
+        }
+        #endregion
+
         private bool _pozitive;
         private int _degrees, _minutes, _seconds;
 
@@ -130,6 +160,11 @@ namespace AngleProblem
             return new Angle(poz, deg, min, sec);
         }
 
+        public static Angle operator *(int i, Angle a)
+        {
+            return a*i;
+        }
+
         public static bool operator ==(Angle a1, Angle a2)
         {
             if(a1.Pozitive != a2.Pozitive)
@@ -186,22 +221,40 @@ namespace AngleProblem
 
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            var a = new Angle(true, 60, 48, 1);
-            var b = new Angle(true, 60, 48, 1);
-
-            Console.WriteLine("a = {0}\nb = {1}\n".PadRight(34, '_'), a, b);
+            var angle = new Angle(true, 541, 845, 6);
+            Console.WriteLine("a = {0}", angle);
+            Console.WriteLine("!a = {0}", !angle);
+            var angle2 = new Angle(false, 76, 87, 36);
+            Console.WriteLine("b = {0}", angle2);
+            Console.WriteLine("a + b = {0}", angle + angle2);
+            Console.WriteLine("a - b = {0}", angle - angle2);
+            Console.WriteLine("b - a = {0}", angle2 - angle);
+            Console.WriteLine("a * 5 = {0}", angle * 5);
+            Console.WriteLine("35 * b = {0}", 35 * angle2);
+            Console.WriteLine("\nPress any key to move to the next step . . .");
+            Console.ReadKey();
             Console.WriteLine();
 
-            Console.WriteLine("a == b - {0}", a == b);
-            Console.WriteLine("a != b - {0}", a != b);
-            Console.WriteLine("a < b - {0}", a < b);
-            Console.WriteLine("a > b - {0}", a > b);
-            Console.WriteLine("a <= b - {0}", a <= b);
-            Console.WriteLine("a >= b - {0}", a >= b);
+            var a1 = new Angle(true, 60, 48, 1);
+            var a2 = new Angle(true, 60, 48, 1);
+            Anglecw(a1, a2);
+            Console.WriteLine("\nPress any key to move to the next step . . .");
+            Console.ReadKey();
             Console.WriteLine();
 
+            var a3 = new Angle(true, 43, 46, 8);
+            var a4 = new Angle(true, 43, 47, 8);
+            Anglecw(a3, a4);
+            Console.WriteLine("\nPress any key to move to the next step . . .");
+            Console.ReadKey();
+            Console.WriteLine();
+
+            var a5 = new Angle(false, 123, 41, 48);
+            var a6 = new Angle(true, 84, 27, 2);
+            Anglecw(a5, a6);
+            Console.WriteLine("\nFINISH!");
         }
     }
 }
